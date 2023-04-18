@@ -1,0 +1,164 @@
+// The purpose of this example was to create a working ohmmeter
+// and to use the LCD to display the correct value
+
+#include <LiquidCrystal.h> 
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
+#include <DHT_U.h>
+
+#define DHTPIN 5
+#define DHTTYPE DHT11
+
+const int rs = 7, en = 8, d4 = 10, d5 = 11, d6 = 12, d7 = 13;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+// initialize the library by associating any needed LCD interface pin
+// with the arduino pin number it is connected to
+
+byte customChar[8] = {
+	0b00110,
+	0b01001,
+	0b01001,
+	0b00110,
+	0b00000,
+	0b00000,
+	0b00000,
+	0b00000
+};
+
+int pbval;
+int lastpbval;
+int presscount;
+
+DHT_Unified dht(DHTPIN, DHTTYPE);
+
+uint32_t delayMS;
+
+  const unsigned long TIMER_INTERVAL = 1000;
+  unsigned long previousMillis = 0;
+
+void setup() {
+
+
+
+  
+  lcd.begin(16, 2); // set up the LCD's number of columns and rows:
+  lcd.createChar(0, customChar); // add the custom symbol as text
+  Serial.begin(9600);
+  dht.begin();
+  Serial.println(F("DHTxx Unified Sensor Example"));
+
+  sensor_t sensor;
+  dht.temperature().getSensor(&sensor);
+  Serial.println(F("------------------------------------"));
+  Serial.println(F("Temperature Sensor"));
+  Serial.print  (F("Sensor Type: ")); Serial.println(sensor.name);
+  Serial.print  (F("Driver Ver:  ")); Serial.println(sensor.version);
+  Serial.print  (F("Unique ID:   ")); Serial.println(sensor.sensor_id);
+  Serial.print  (F("Max Value:   ")); Serial.print(sensor.max_value); Serial.println(F("°C"));
+  Serial.print  (F("Min Value:   ")); Serial.print(sensor.min_value); Serial.println(F("°C"));
+  Serial.print  (F("Resolution:  ")); Serial.print(sensor.resolution); Serial.println(F("°C"));
+  Serial.println(F("------------------------------------"));
+  // Print humidity sensor details.
+  dht.humidity().getSensor(&sensor);
+  Serial.println(F("Humidity Sensor"));
+  Serial.print  (F("Sensor Type: ")); Serial.println(sensor.name);
+  Serial.print  (F("Driver Ver:  ")); Serial.println(sensor.version);
+  Serial.print  (F("Unique ID:   ")); Serial.println(sensor.sensor_id);
+  Serial.print  (F("Max Value:   ")); Serial.print(sensor.max_value); Serial.println(F("%"));
+  Serial.print  (F("Min Value:   ")); Serial.print(sensor.min_value); Serial.println(F("%"));
+  Serial.print  (F("Resolution:  ")); Serial.print(sensor.resolution); Serial.println(F("%"));
+  Serial.println(F("------------------------------------"));
+  // Set delay between sensor readings based on sensor details.
+  delayMS = sensor.min_delay / 1000;
+  
+  pinMode (2, INPUT_PULLUP);
+  pbval=digitalRead(2);
+}
+
+void loop() {
+
+
+ lastpbval = pbval;
+ pbval = digitalRead (2);
+ 
+ if (pbval == 1 && lastpbval == 0){
+  presscount = presscount + 1;
+
+
+ if (presscount >= 3) {
+  presscount = 0;
+ }
+
+
+ }
+  sensors_event_t event;
+  dht.temperature().getEvent(&event);
+  if (isnan(event.temperature)) {
+    Serial.println(F("Error reading temperature!"));
+    lcd.setCursor(0, 0); 
+    lcd.print("error         "); 
+  }
+  else {
+    Serial.print(F("Temperature: "));
+    float clss = (event.temperature*1);
+    Serial.print(clss);
+    Serial.println(F("°C"));
+    
+  }
+
+if (isnan(event.temperature)) {
+    Serial.println(F("Error reading temperature!"));
+  }
+  else {
+    Serial.print(F("Temperature: "));
+    float frnt = ((event.temperature*9/5)+32);
+    Serial.print(frnt);
+    Serial.println(F("°F"));
+
+  }
+
+  // Get humidity event and print its value.
+  dht.humidity().getEvent(&event);
+  if (isnan(event.relative_humidity)) {
+    Serial.println(F("Error reading humidity!"));
+  }
+  else {
+    Serial.print(F("Humidity: "));
+    Serial.print(event.relative_humidity);
+    Serial.println(F("%")); }
+
+
+  if (presscount == 0) {
+  float clss = (event.temperature);
+  lcd.setCursor(0, 0); 
+  lcd.print("TempC = "); 
+  lcd.print(clss);
+  lcd.write((byte)0);
+  lcd.print("C    ");
+  
+  }
+
+  if (presscount == 1) {
+  float frnt = ((event.temperature*9/5)+32);
+  lcd.setCursor(0, 0); 
+  lcd.print("TempF = "); 
+  lcd.print(frnt);
+  lcd.write((byte)0);
+  lcd.print("F   ");
+  
+  }
+
+  if (presscount == 2) {
+  lcd.setCursor(0, 0); 
+  lcd.print("HUM = ");
+  lcd.print(event.relative_humidity);
+  lcd.print("%    ");
+  
+  }
+  
+  
+  Serial.println(presscount);
+  Serial.println(pbval);
+
+
+}
