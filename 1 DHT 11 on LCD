@@ -113,7 +113,7 @@ void loop() {
   lcd.print("C    ");
   
   
-  lcd.setCursor(0, 0); 
+  lcd.setCursor(1, 0); 
   lcd.print("HUM = ");
   lcd.print(event.relative_humidity);
   lcd.print("%    ");
