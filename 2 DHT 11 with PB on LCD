@@ -70,7 +70,7 @@ void loop() {
  if (presscount >= 3) {
   presscount = 0;
   
-  // pushbutton resets after 3 presses
+  // pushbutton resets to 0 after 3 presses
  }
 
 
@@ -124,6 +124,8 @@ void loop() {
   lcd.write((byte)0);
   lcd.print("C    ");
   
+  // At 0 presses, the Celsius value will be printed to the LCD
+  // example "TempC = 25°C"
   }
 
   if (presscount == 1) {
@@ -134,6 +136,9 @@ void loop() {
   lcd.write((byte)0);
   lcd.print("F   ");
   
+  // At 1 press, the calculated Fahrenheit value will be printed to the LCD
+  // example "TempF = 77°F"
+  
   }
 
   if (presscount == 2) {
@@ -141,12 +146,10 @@ void loop() {
   lcd.print("HUM = ");
   lcd.print(event.relative_humidity);
   lcd.print("%    ");
+  // example "HUM = 20%"
+  
+  // At 2 presses, the humidity value will be printed to the LCD
   
   }
   
-  
-  Serial.println(presscount);
-  Serial.println(pbval);
-
-
 }
