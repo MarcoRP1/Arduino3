@@ -1,13 +1,13 @@
-// The purpose of this example was to create a working ohmmeter
-// and to use the LCD to display the correct value
+// The purpose of this example was to measure the temperature
+// and humidity of the room using a DHT11 sensor
 
-#include <LiquidCrystal.h> 
-#include <Adafruit_Sensor.h>
+#include <LiquidCrystal.h> // include LCD library
+#include <Adafruit_Sensor.h> // include DHT library
 #include <DHT.h>
 #include <DHT_U.h>
 
-#define DHTPIN 5
-#define DHTTYPE DHT11
+#define DHTPIN 5 // define the pin associated with the DHT
+#define DHTTYPE DHT11 // define the temp sensor type
 
 const int rs = 7, en = 8, d4 = 10, d5 = 11, d6 = 12, d7 = 13;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
@@ -18,7 +18,7 @@ byte customChar[8] = {
 	0b00110,
 	0b01001,
 	0b01001,
-	0b00110,
+	0b00110, // create degree symbol (°)
 	0b00000,
 	0b00000,
 	0b00000,
@@ -26,53 +26,31 @@ byte customChar[8] = {
 };
 
 int pbval;
-int lastpbval;
+int lastpbval; // setting the following values as integers
 int presscount;
 
-DHT_Unified dht(DHTPIN, DHTTYPE);
+DHT_Unified dht(DHTPIN, DHTTYPE); 
+// identifying the type and entry pin (inputted above)
 
 uint32_t delayMS;
 
-  const unsigned long TIMER_INTERVAL = 1000;
+  const unsigned long TIMER_INTERVAL = 1000; 
   unsigned long previousMillis = 0;
 
 void setup() {
-
-
-
   
   lcd.begin(16, 2); // set up the LCD's number of columns and rows:
   lcd.createChar(0, customChar); // add the custom symbol as text
-  Serial.begin(9600);
+  
+  Serial.begin(9600); // initialize serial communication
   dht.begin();
-  Serial.println(F("DHTxx Unified Sensor Example"));
+
 
   sensor_t sensor;
-  dht.temperature().getSensor(&sensor);
-  Serial.println(F("------------------------------------"));
-  Serial.println(F("Temperature Sensor"));
-  Serial.print  (F("Sensor Type: ")); Serial.println(sensor.name);
-  Serial.print  (F("Driver Ver:  ")); Serial.println(sensor.version);
-  Serial.print  (F("Unique ID:   ")); Serial.println(sensor.sensor_id);
-  Serial.print  (F("Max Value:   ")); Serial.print(sensor.max_value); Serial.println(F("°C"));
-  Serial.print  (F("Min Value:   ")); Serial.print(sensor.min_value); Serial.println(F("°C"));
-  Serial.print  (F("Resolution:  ")); Serial.print(sensor.resolution); Serial.println(F("°C"));
-  Serial.println(F("------------------------------------"));
-  // Print humidity sensor details.
-  dht.humidity().getSensor(&sensor);
-  Serial.println(F("Humidity Sensor"));
-  Serial.print  (F("Sensor Type: ")); Serial.println(sensor.name);
-  Serial.print  (F("Driver Ver:  ")); Serial.println(sensor.version);
-  Serial.print  (F("Unique ID:   ")); Serial.println(sensor.sensor_id);
-  Serial.print  (F("Max Value:   ")); Serial.print(sensor.max_value); Serial.println(F("%"));
-  Serial.print  (F("Min Value:   ")); Serial.print(sensor.min_value); Serial.println(F("%"));
-  Serial.print  (F("Resolution:  ")); Serial.print(sensor.resolution); Serial.println(F("%"));
-  Serial.println(F("------------------------------------"));
+
   // Set delay between sensor readings based on sensor details.
   delayMS = sensor.min_delay / 1000;
   
-  pinMode (2, INPUT_PULLUP);
-  pbval=digitalRead(2);
 }
 
 void loop() {
@@ -80,10 +58,13 @@ void loop() {
 
   sensors_event_t event;
   dht.temperature().getEvent(&event);
+  
   if (isnan(event.temperature)) {
     Serial.println(F("Error reading temperature!"));
-    lcd.setCursor(0, 0); 
+    lcd.setCursor(0, 0);
     lcd.print("error         "); 
+    
+    // if there is no reading, an error message will be printed
   }
   else {
     Serial.print(F("Temperature: "));
@@ -91,6 +72,7 @@ void loop() {
     Serial.print(clss);
     Serial.println(F("°C"));
     
+    // if there is a reading, the measured temperature will be printed
   }
 
 
@@ -98,11 +80,18 @@ void loop() {
   dht.humidity().getEvent(&event);
   if (isnan(event.relative_humidity)) {
     Serial.println(F("Error reading humidity!"));
+    lcd.setCursor(1, 0); 
+    lcd.print("error         "); 
+    
+    // if there is no reading, an error message will be printed
   }
   else {
     Serial.print(F("Humidity: "));
     Serial.print(event.relative_humidity);
-    Serial.println(F("%")); }
+    Serial.println(F("%")); 
+    
+    // if there is a reading, the measured humidity will be printed
+  }
 
 
   float clss = (event.temperature);
@@ -112,12 +101,16 @@ void loop() {
   lcd.write((byte)0);
   lcd.print("C    ");
   
+  // this is what will be printed on the LCD for temperature
+  // example "TempC = 24°C"
+  
   
   lcd.setCursor(1, 0); 
   lcd.print("HUM = ");
   lcd.print(event.relative_humidity);
   lcd.print("%    ");
 
-
+  // this is what will be printed on the LCD for temperature
+  // example "HUM = 20%"
 
 }
