@@ -1,13 +1,13 @@
-// The purpose of this example was to create a working ohmmeter
-// and to use the LCD to display the correct value
+// The purpose of this example was to measure the temperature
+// and humidity of the room using a DHT11 sensor
 
-#include <LiquidCrystal.h> 
-#include <Adafruit_Sensor.h>
+#include <LiquidCrystal.h> // include LCD library
+#include <Adafruit_Sensor.h> // include DHT library
 #include <DHT.h>
 #include <DHT_U.h>
 
-#define DHTPIN 5
-#define DHTTYPE DHT11
+#define DHTPIN 5 // define the pin associated with the DHT
+#define DHTTYPE DHT11 // define the temp sensor type
 
 const int rs = 7, en = 8, d4 = 10, d5 = 11, d6 = 12, d7 = 13;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
@@ -18,7 +18,7 @@ byte customChar[8] = {
 	0b00110,
 	0b01001,
 	0b01001,
-	0b00110,
+	0b00110, // create degree symbol (°)
 	0b00000,
 	0b00000,
 	0b00000,
