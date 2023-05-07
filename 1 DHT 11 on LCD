@@ -77,8 +77,6 @@ void loop() {
   dht.humidity().getEvent(&event);
   if (isnan(event.relative_humidity)) {
     Serial.println(F("Error reading humidity!"));
-    lcd.setCursor(1, 0); 
-    lcd.print("error         "); 
     
     // if there is no reading, an error message will be printed
   }
