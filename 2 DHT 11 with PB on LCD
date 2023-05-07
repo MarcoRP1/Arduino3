@@ -1,5 +1,6 @@
-// The purpose of this example was to measure the temperature
-// and humidity of the room using a DHT11 sensor
+// The purpose of this example was to measure the temperature and
+// humidity of the room using a DHT11 sensor, by switching the display
+// value depending on how many times the pushbutton has been pressed
 
 #include <LiquidCrystal.h> // include LCD library
 #include <Adafruit_Sensor.h> // include DHT library
