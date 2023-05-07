@@ -61,15 +61,16 @@ void loop() {
     lcd.setCursor(0, 0);
     lcd.print("error         "); 
     
-    // if there is no reading, an error message will be printed
+  // if there is no reading, an error message will be printed to the LCD
   }
+  
   else {
     Serial.print(F("Temperature: "));
     float clss = (event.temperature);
     Serial.print(clss);
     Serial.println(F("°C"));
     
-    // if there is a reading, the measured temperature will be printed
+  // if there is a reading, the measured temperature will be serial printed
   }
 
 
@@ -77,15 +78,14 @@ void loop() {
   dht.humidity().getEvent(&event);
   if (isnan(event.relative_humidity)) {
     Serial.println(F("Error reading humidity!"));
-    
-    // if there is no reading, an error message will be printed
   }
+  
   else {
     Serial.print(F("Humidity: "));
     Serial.print(event.relative_humidity);
     Serial.println(F("%")); 
     
-    // if there is a reading, the measured humidity will be printed
+  // if there is a reading, the measured humidity will be serial printed
   }
 
 
