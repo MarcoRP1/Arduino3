@@ -26,7 +26,7 @@ byte customChar[8] = {
 };
 
 int pbval;
-int lastpbval;
+int lastpbval; // sets the following values as integers
 int presscount;
 
 DHT_Unified dht(DHTPIN, DHTTYPE);
