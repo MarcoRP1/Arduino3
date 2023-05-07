@@ -25,9 +25,6 @@ byte customChar[8] = {
 	0b00000
 };
 
-int pbval;
-int lastpbval; // setting the following values as integers
-int presscount;
 
 DHT_Unified dht(DHTPIN, DHTTYPE); 
 // identifying the type and entry pin (inputted above)
