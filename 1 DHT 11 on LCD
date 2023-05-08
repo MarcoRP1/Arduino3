@@ -29,10 +29,6 @@ byte customChar[8] = {
 DHT_Unified dht(DHTPIN, DHTTYPE); 
 // identifying the type and entry pin (inputted above)
 
-uint32_t delayMS;
-
-  const unsigned long TIMER_INTERVAL = 1000; 
-  unsigned long previousMillis = 0;
 
 void setup() {
   
@@ -45,8 +41,6 @@ void setup() {
 
   sensor_t sensor;
 
-  // Set delay between sensor readings based on sensor details.
-  delayMS = sensor.min_delay / 1000;
   
 }
 
@@ -58,10 +52,8 @@ void loop() {
   
   if (isnan(event.temperature)) {
     Serial.println(F("Error reading temperature!"));
-    lcd.setCursor(0, 0);
-    lcd.print("error         "); 
     
-  // if there is no reading, an error message will be printed to the LCD
+  // if there is no reading, an error message will be serial printed
   }
   
   else {
@@ -100,7 +92,7 @@ void loop() {
   // example "TempC = 24°C"
   
   
-  lcd.setCursor(1, 0); 
+  lcd.setCursor(0, 1); 
   lcd.print("HUM = ");
   lcd.print(event.relative_humidity);
   lcd.print("%    ");
