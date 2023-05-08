@@ -1,0 +1,193 @@
+// The purpose of this example was to measure the temperature and
+// humidity of the room using a DHT11 sensor, by switching the display
+// value depending on how many times the pushbutton has been pressed
+
+#include <LiquidCrystal.h> // include LCD library
+#include <Adafruit_Sensor.h> // include DHT library
+#include <NewPing.h> // include NewPing sensor library
+#include <DHT.h>
+#include <DHT_U.h>
+
+#define DHTPIN 5 // define the pin associated with the DHT
+#define DHTTYPE DHT11 // define the temp sensor type
+
+#define TRIGGER_PIN  4  // Arduino pin tied to trigger pin on the ultrasonic sensor
+#define ECHO_PIN     3  // Arduino pin tied to echo pin on the ultrasonic sensor
+#define MAX_DISTANCE 200 // Maximum distance to ping for (in centimeters)
+
+const int rs = 7, en = 8, d4 = 10, d5 = 11, d6 = 12, d7 = 13;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+// initialize the library by associating any needed LCD interface pin
+// with the arduino pin number it is connected to
+
+byte customChar[8] = {
+	0b00110,
+	0b01001,
+	0b01001,
+	0b00110, // create degree symbol (°)
+	0b00000,
+	0b00000,
+	0b00000,
+	0b00000
+};
+
+int pbval;
+int lastpbval; // sets the following values as integers
+int presscount;
+
+DHT_Unified dht(DHTPIN, DHTTYPE);
+// identifying the type and entry pin (inputted above)
+
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); 
+// NewPing setup of pins and maximum distance
+
+void setup() {
+
+  
+  lcd.begin(16, 2); // set up the LCD's number of columns and rows:
+  lcd.createChar(0, customChar); // add the custom symbol as text
+  Serial.begin(9600);
+  dht.begin();
+  
+
+  sensor_t sensor;
+  
+  pinMode (2, INPUT_PULLUP);
+  pbval=digitalRead(2);
+  // sets the pushbutton at pin 2
+}
+
+void loop() {
+
+
+ lastpbval = pbval;
+ pbval = digitalRead (2);
+ 
+ if (pbval == 1 && lastpbval == 0){
+  presscount = presscount + 1;
+  
+  // counting system for pushbutton
+
+ if (presscount >= 4) {
+  presscount = 0;
+  
+  // pushbutton resets to 0 after 4 presses
+ }
+
+
+ }
+  sensors_event_t event;
+  dht.temperature().getEvent(&event);
+  if (isnan(event.temperature)) {
+    Serial.println(F("Error reading temperature!"));
+    lcd.setCursor(0, 0); 
+    lcd.print("error         "); 
+    
+  // if there is no reading, an error message will be printed to the LCD
+  
+  }
+  else {
+    Serial.print(F("Temperature: "));
+    float clss = (event.temperature*1);
+    Serial.print(clss);
+    Serial.println(F("°C"));
+    
+    Serial.print(F("Temperature: "));
+    float frnt = ((event.temperature*9/5)+32);
+    Serial.print(frnt);
+    Serial.println(F("°F"));
+    
+  // if there is a reading, the measured temperatures will be serial printed
+  
+  }
+
+
+  // Get humidity event and print its value.
+  dht.humidity().getEvent(&event);
+  if (isnan(event.relative_humidity)) {
+    Serial.println(F("Error reading humidity!"));
+    
+  // if there is no reading, an error message will be serial printed
+    
+  }
+  else {
+    Serial.print(F("Humidity: "));
+    Serial.print(event.relative_humidity);
+    Serial.println(F("%")); }
+    
+  // if there is a reading, the measured humidity will be serial printed
+
+
+  if (sonar.ping_cm() < 4){
+
+  Serial.println ("Excess Range   ");
+
+  // if the distance is below 4 (too close to sensor) or 0 (too far from sensor)
+  // the message "Excess Range" will be serial printed
+  }
+
+  else {
+  Serial.print("Distance = "); 
+  Serial.print(sonar.ping_cm());
+  Serial.println("cm     ");
+
+  // if the distance is anything above, the distance will be serial printed
+  }
+
+  if (presscount == 0) {
+  float clss = (event.temperature);
+  lcd.setCursor(0, 0); 
+  lcd.print("TempC = "); 
+  lcd.print(clss);
+  lcd.write((byte)0);
+  lcd.print("C    ");
+  
+  // At 0 presses, the Celsius value will be printed to the LCD
+  // example "TempC = 25°C"
+  }
+
+  if (presscount == 1) {
+  float frnt = ((event.temperature*9/5)+32);
+  lcd.setCursor(0, 0); 
+  lcd.print("TempF = "); 
+  lcd.print(frnt);
+  lcd.write((byte)0);
+  lcd.print("F   ");
+  
+  // At 1 press, the calculated Fahrenheit value will be printed to the LCD
+  // example "TempF = 77°F"
+  
+  }
+
+  if (presscount == 2) {
+  lcd.setCursor(0, 0); 
+  lcd.print("HUM = ");
+  lcd.print(event.relative_humidity);
+  lcd.print("%    ");
+  // example "HUM = 20%"
+  
+  // At 2 presses, the humidity value will be printed to the LCD
+  
+  }
+  
+ if (presscount == 3) {
+
+  if (sonar.ping_cm() < 4){
+
+  lcd.setCursor(0, 0);
+  lcd.print ("Excess Range   ");
+
+  // if the distance is below 4 (too close to sensor) or 0 (too far from sensor)
+  // the message "Excess Range" will be printed on the LCD
+  }
+
+  else {
+  lcd.setCursor(0, 0); 
+  lcd.print("Distance = "); 
+  lcd.print(sonar.ping_cm());
+  lcd.print("cm     ");
+  
+  // if the distance is anything above, the distance will be LCD printed}
+  }
+ }
+}
