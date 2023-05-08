@@ -1,0 +1,53 @@
+// The purpose of this exercise was to use the ultrasonic sensor to measure
+// the distance of an object. This one uses the NewPing sensor library.
+
+#include <LiquidCrystal.h> // include LCD library
+#include <NewPing.h> // include NewPing sensor library
+
+#define TRIGGER_PIN  4  // Arduino pin tied to trigger pin on the ultrasonic sensor
+#define ECHO_PIN     3  // Arduino pin tied to echo pin on the ultrasonic sensor
+#define MAX_DISTANCE 200 // Maximum distance to ping for (in centimeters)
+
+const int rs = 7, en = 8, d4 = 10, d5 = 11, d6 = 12, d7 = 13;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+// initialize the library by associating any needed LCD interface pin
+// with the arduino pin number it is connected to
+
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); 
+// NewPing setup of pins and maximum distance
+
+void setup() {
+
+  lcd.begin(16, 2); // set up the LCD's number of columns and rows
+
+  Serial.begin(9600); // Activate serial communication
+}
+
+void loop() {
+
+  Serial.print("Ping: ");
+  Serial.print(sonar.ping_cm()); // Send ping, get distance in cm and print result
+  Serial.println("cm");
+
+if (sonar.ping_cm() < 4){
+
+  lcd.setCursor(0, 0);
+  lcd.print ("Excess Range   ");
+
+  // if the distance is below 4 (too close to sensor) or 0 (too far from sensor)
+  // the message "Excess Range" will be printed on the LCD
+}
+
+else {
+  lcd.setCursor(0, 0); 
+  lcd.print("Distance = "); 
+  lcd.print(sonar.ping_cm());
+  lcd.print("cm     ");
+  
+  // if the distance is anything above, the distance will be LCD printed
+}
+
+  delay(200);
+  // 200 ms delay between measurements
+
+}
