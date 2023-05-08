@@ -33,10 +33,6 @@ int presscount;
 DHT_Unified dht(DHTPIN, DHTTYPE);
 // identifying the type and entry pin (inputted above)
 
-uint32_t delayMS;
-
-  const unsigned long TIMER_INTERVAL = 1000;
-  unsigned long previousMillis = 0;
 
 void setup() {
 
@@ -48,9 +44,6 @@ void setup() {
   
 
   sensor_t sensor;
-  
-  // Set delay between sensor readings based on sensor details.
-  delayMS = sensor.min_delay / 1000;
   
   pinMode (2, INPUT_PULLUP);
   pbval=digitalRead(2);
