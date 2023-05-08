@@ -1,6 +1,6 @@
-// The purpose of this example was to measure the temperature and
-// humidity of the room using a DHT11 sensor, by switching the display
-// value depending on how many times the pushbutton has been pressed
+// The purpose of this example was to switch between the Celsius temperature, 
+// Fahrenheit temperature, humidity, and distance depending on how many times 
+// the pushbutton has been pressed
 
 #include <LiquidCrystal.h> // include LCD library
 #include <Adafruit_Sensor.h> // include DHT library
@@ -164,13 +164,15 @@ void loop() {
   lcd.print("HUM = ");
   lcd.print(event.relative_humidity);
   lcd.print("%    ");
-  // example "HUM = 20%"
-  
+
   // At 2 presses, the humidity value will be printed to the LCD
+  // example "HUM = 20%"
   
   }
   
  if (presscount == 3) {
+
+  // at 3 presses, either of the following will happen
 
   if (sonar.ping_cm() < 4){
 
@@ -187,7 +189,11 @@ void loop() {
   lcd.print(sonar.ping_cm());
   lcd.print("cm     ");
   
-  // if the distance is anything above, the distance will be LCD printed}
-  }
- }
-}
+  // if the distance is anything above, the distance will be LCD printed
+  // example "Distance = 11cm"
+
+  } // end of else loop
+
+ } // end of if (presscount == 3) loop
+
+} // end of void loop
